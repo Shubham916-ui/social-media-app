@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 
@@ -17,6 +18,16 @@ mongoose
     // Load your routes ONLY after DB is connected!
     app.use("/api/users", require("./routes/users"));
     app.use("/api/posts", require("./routes/posts"));
+    // Serve profile page
+    app.get("/profile", (req, res) => {
+      res.sendFile(path.join(__dirname, "public", "profile.html"));
+    });
+
+    // Explicit home
+    app.get("/home", (req, res) => {
+      res.sendFile(path.join(__dirname, "public", "home.html"));
+    });
+
     app.use("/api/comments", require("./routes/comments"));
 
     // Start server after DB connects

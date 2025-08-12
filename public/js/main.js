@@ -26,7 +26,7 @@ const auth = {
   logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.href = "index.html";
+    window.location.replace("/");
   },
 };
 
@@ -67,7 +67,7 @@ document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
     if (result.token) {
       auth.setToken(result.token);
       auth.setUser(result.user);
-      window.location.href = "home.html";
+      window.location.replace("/home");
     } else {
       alert("Login failed: " + result.error);
     }
@@ -76,7 +76,12 @@ document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
   }
 });
 
-// Check if already logged in
-if (auth.isLoggedIn() && window.location.pathname.includes("index.html")) {
-  window.location.href = "home.html";
+// If already logged in on the login/register pages, redirect to /home
+if (
+  auth.isLoggedIn() &&
+  (window.location.pathname === "/" ||
+    window.location.pathname.endsWith("index.html") ||
+    window.location.pathname.endsWith("register.html"))
+) {
+  window.location.replace("/home");
 }

@@ -34,7 +34,10 @@ router.post("/", async (req, res) => {
     });
 
     await comment.save();
+
+    // Add comment to post and update comment count
     postExists.comments.push(comment._id);
+    postExists.commentCount = postExists.comments.length;
     await postExists.save();
 
     await comment.populate("user", "username name avatar");

@@ -20,7 +20,7 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "User already exists" });
     }
 
-    const user = new User({ username, email, password, name, bio });
+    const user = new User({ username, email, password, name, bio }); // avatar will default via schema
     await user.save();
 
     // Remove password from response
