@@ -610,6 +610,25 @@ document.querySelectorAll(".sidebar-item").forEach((item) => {
   });
 });
 
+// Toast for features not implemented yet (Explore, Create, Notifications, Messages, etc.)
+(function setupFeatureComingSoonToasts() {
+  const items = document.querySelectorAll(".sidebar-item, .nav-item");
+  items.forEach((item) => {
+    const label = item.querySelector("span")?.textContent?.trim() || "";
+    const l = label.toLowerCase();
+    const isProfile =
+      item.id === "sidebarProfile" || item.id === "bottomProfile";
+    const isHome = l === "home";
+    const isMore = l === "more" || item.id === "sidebarMore";
+    if (isProfile || isHome || isMore) return; // exclude Home, Profile, More
+
+    item.addEventListener("click", () => {
+      if (!label) return;
+      showNotification(`${label} feature is coming soon`, "info");
+    });
+  });
+})();
+
 // Follow button toggle
 document.querySelectorAll(".follow-button").forEach((btn) => {
   btn.addEventListener("click", function () {

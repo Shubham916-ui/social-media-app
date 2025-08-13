@@ -1626,6 +1626,25 @@ body.home-page.dark {
   color: #e5e7eb;
 }
 
+/* Dark mode: improve bottom nav visibility on small devices */
+.dark .bottom-nav {
+  background-color: rgba(17, 17, 17, 0.98); /* slightly opaque for contrast */
+  border-top: 1px solid #262626; /* clearer divider */
+  box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(6px);
+}
+.dark .bottom-nav .nav-item i,
+.dark .bottom-nav .nav-item span {
+  color: inherit; /* ensure icons/text follow .nav-item color */
+}
+.dark .nav-item:hover {
+  background-color: #1a1a1a;
+  color: #60a5fa;
+}
+.dark .nav-item.active {
+  color: #60a5fa;
+}
+
 /* Show bottom nav only on small devices */
 @media (min-width: 768px) {
   .bottom-nav {
