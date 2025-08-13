@@ -4,7 +4,7 @@ const User = require("../models/User");
 const auth = require("../middleware/auth"); // Authentication middleware
 const router = express.Router();
 
-const JWT_SECRET = "your-secret-key"; // Production mein environment variable use kariye
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 // Register user
 router.post("/register", async (req, res) => {

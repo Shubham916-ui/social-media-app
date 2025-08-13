@@ -3,6 +3,9 @@ const API_BASE =
     ? "http://localhost:5000/api"
     : "/api";
 
+console.log("API_BASE:", API_BASE);
+console.log("Current hostname:", window.location.hostname);
+
 // Authentication utilities
 const auth = {
   setToken(token) {
@@ -36,6 +39,7 @@ const auth = {
 // API calls
 const api = {
   async post(endpoint, data) {
+    console.log("Making API call to:", `${API_BASE}${endpoint}`);
     const response = await fetch(`${API_BASE}${endpoint}`, {
       method: "POST",
       headers: {
@@ -44,7 +48,10 @@ const api = {
       },
       body: JSON.stringify(data),
     });
-    return await response.json();
+    console.log("Response status:", response.status);
+    const result = await response.json();
+    console.log("Response data:", result);
+    return result;
   },
 
   async get(endpoint) {
