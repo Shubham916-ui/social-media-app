@@ -55,6 +55,15 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+// Catch-all handler: send back React's index.html file for client-side routing
+app.get("*", (req, res) => {
+  // Don't serve index.html for API routes
+  if (req.path.startsWith("/api/")) {
+    return res.status(404).json({ error: "API endpoint not found" });
+  }
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error("Error:", err);

@@ -9,27 +9,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/app.js"
-    },
-    {
-      "src": "/home",
-      "dest": "/public/home.html"
-    },
-    {
-      "src": "/profile",
-      "dest": "/public/profile.html"
-    },
-    {
-      "src": "/register",
-      "dest": "/public/register.html"
-    },
-    {
-      "src": "/",
-      "dest": "/public/index.html"
+      "dest": "app.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "dest": "app.js"
     }
   ]
 }
