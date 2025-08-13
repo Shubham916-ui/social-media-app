@@ -5,10 +5,17 @@ const connectDB = require("./config/db");
 
 const app = express();
 
-// Connect to database
-connectDB().catch((err) => {
-  console.error("Database connection failed:", err);
-});
+// Connect to database with better error handling
+if (process.env.NODE_ENV === "production") {
+  // In production, try to connect but don't crash if it fails initially
+  connectDB().catch((err) => {
+    console.error("Database connection failed:", err);
+    // Don't exit the process, let the app start anyway
+  });
+} else {
+  // In development, connect normally
+  connectDB();
+}
 
 // Middleware
 app.use(
@@ -25,13 +32,25 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Database connection handled by connectDB() above
 
+// Simple test endpoint
+app.get("/api/test", (req, res) => {
+  res.json({ message: "API is working!" });
+});
+
 // Health check endpoint
 app.get("/api/health", (req, res) => {
-  res.json({
-    status: "OK",
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || "development",
-  });
+  try {
+    res.json({
+      status: "OK",
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || "development",
+      mongodb_uri_set: !!process.env.MONGODB_URI,
+      jwt_secret_set: !!process.env.JWT_SECRET,
+    });
+  } catch (error) {
+    console.error("Health check error:", error);
+    res.status(500).json({ error: "Health check failed" });
+  }
 });
 
 // API Routes
