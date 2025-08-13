@@ -112,10 +112,24 @@ function createPostElement(post) {
   postDiv.innerHTML = `
     <div class="post-header">
       <img class="post-avatar" src="${avatarSrc}" alt="${displayName}">
-      <div>
+      <div style="flex: 1;">
         <div class="post-username">${displayName}</div>
         <div class="post-time">${formatTime(post.createdAt)}</div>
       </div>
+      ${
+        myId === (postUser._id || post.user)
+          ? `<div class="post-menu">
+          <button class="post-menu-btn" onclick="togglePostMenu('${post._id}')">
+            <i class="fas fa-ellipsis-h"></i>
+          </button>
+          <div class="post-menu-dropdown" id="menu-${post._id}" style="display: none;">
+            <button class="menu-item delete-post" onclick="deletePost('${post._id}')">
+              <i class="fas fa-trash"></i> Delete Post
+            </button>
+          </div>
+        </div>`
+          : ""
+      }
     </div>
     <div class="post-content">${(post.content || "").toString()}</div>
     ${
@@ -138,6 +152,99 @@ function createPostElement(post) {
   `;
   return postDiv;
 }
+
+// Toggle post menu dropdown with smooth animation
+function togglePostMenu(postId) {
+  const menu = document.getElementById(`menu-${postId}`);
+  const allMenus = document.querySelectorAll(".post-menu-dropdown");
+
+  // Close all other menus with animation
+  allMenus.forEach((m) => {
+    if (m.id !== `menu-${postId}`) {
+      m.classList.remove("show");
+      setTimeout(() => {
+        m.style.display = "none";
+      }, 300);
+    }
+  });
+
+  // Toggle current menu with animation
+  if (menu.style.display === "none" || !menu.style.display) {
+    menu.style.display = "block";
+    // Force reflow for animation
+    menu.offsetHeight;
+    menu.classList.add("show");
+  } else {
+    menu.classList.remove("show");
+    setTimeout(() => {
+      menu.style.display = "none";
+    }, 300);
+  }
+}
+
+// Delete post function
+async function deletePost(postId) {
+  try {
+    const response = await fetch(`http://localhost:5000/api/posts/${postId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      // Remove post from DOM
+      const postElement = document.getElementById(`post-${postId}`);
+      if (postElement) {
+        postElement.remove();
+      }
+
+      // Show success message
+      showNotification("Post deleted successfully!", "success");
+
+      // Reload posts to update the count
+      loadProfile(userId);
+    } else {
+      const error = await response.json();
+      showNotification(
+        "Error deleting post: " + (error.error || "Unknown error"),
+        "error"
+      );
+    }
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    showNotification("Network error: " + error.message, "error");
+  }
+}
+
+// Show notification function
+function showNotification(message, type = "info") {
+  const notification = document.createElement("div");
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+
+  // Add to page
+  document.body.appendChild(notification);
+
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.parentNode.removeChild(notification);
+    }
+  }, 3000);
+}
+
+// Close menus when clicking outside with animation
+document.addEventListener("click", function (event) {
+  if (!event.target.closest(".post-menu")) {
+    document.querySelectorAll(".post-menu-dropdown").forEach((menu) => {
+      menu.classList.remove("show");
+      setTimeout(() => {
+        menu.style.display = "none";
+      }, 300);
+    });
+  }
+});
 
 async function parseJsonSafe(res, url) {
   const ct = res.headers.get("content-type") || "";

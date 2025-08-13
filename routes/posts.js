@@ -81,6 +81,25 @@ router.post("/:id/like", async (req, res) => {
   }
 });
 
+// Get single post by ID
+router.get("/:id", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id)
+      .populate("user", "username name avatar")
+      .select(
+        "user content image likes likeCount comments commentCount createdAt updatedAt"
+      );
+
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get posts by a specific user (public)
 router.get("/user/:userId", async (req, res) => {
   try {
@@ -91,6 +110,28 @@ router.get("/user/:userId", async (req, res) => {
       )
       .sort({ createdAt: -1 });
     res.json(posts);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete post (temporarily without auth - in production, add proper auth)
+router.delete("/:id", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    // In production, add auth check here:
+    // if (post.user.toString() !== req.userId) {
+    //   return res.status(403).json({ error: "Not authorized to delete this post" });
+    // }
+
+    await Post.findByIdAndDelete(req.params.id);
+
+    res.json({ message: "Post deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

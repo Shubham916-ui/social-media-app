@@ -1,3 +1,26 @@
+:root {
+  --tb-gap: 8px;
+  --tb-pad: 16px;
+  --logo-w: 160px;
+  --search-max: 470px;
+
+  /* Theme colors */
+  --text-primary: #333;
+  --text-secondary: #666;
+  --card-bg: white;
+  --border-color: #e0e0e0;
+  --hover-bg: rgba(0, 0, 0, 0.05);
+}
+
+/* Dark theme variables */
+[data-theme="dark"] {
+  --text-primary: #e0e0e0;
+  --text-secondary: #aaa;
+  --card-bg: #2a2a2a;
+  --border-color: #444;
+  --hover-bg: rgba(255, 255, 255, 0.1);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -620,6 +643,7 @@ body.home-page {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
+  position: relative;
 }
 
 .post-avatar {
@@ -950,6 +974,262 @@ body.home-page {
 
 .remove-image:hover {
   background-color: rgba(0, 0, 0, 0.9);
+}
+
+/* Post Menu Styles */
+.post-menu {
+  position: relative;
+  margin-left: auto;
+}
+
+.post-menu-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #666);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.post-menu-btn:hover {
+  background-color: var(--hover-bg, rgba(0, 0, 0, 0.05));
+  color: var(--text-primary, #333);
+  transform: scale(1.1);
+}
+
+.post-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--card-bg, white);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 160px;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.post-menu-dropdown.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 18px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary, #333);
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  margin: 4px;
+}
+
+.menu-item:hover {
+  background-color: var(--hover-bg, rgba(0, 0, 0, 0.05));
+  transform: translateX(4px);
+}
+
+.menu-item i {
+  width: 16px;
+  text-align: center;
+}
+
+.menu-item.delete-post {
+  color: #dc3545;
+}
+
+.menu-item.delete-post:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #c82333;
+}
+
+/* Dark mode support - using .dark class for compatibility */
+.dark .post-menu-btn,
+[data-theme="dark"] .post-menu-btn {
+  color: #aaa;
+}
+
+.dark .post-menu-btn:hover,
+[data-theme="dark"] .post-menu-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.dark .post-menu-dropdown,
+[data-theme="dark"] .post-menu-dropdown {
+  background: #2a2a2a;
+  border-color: #444;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.dark .menu-item,
+[data-theme="dark"] .menu-item {
+  color: #e0e0e0 !important;
+}
+
+.dark .menu-item:hover,
+[data-theme="dark"] .menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .menu-item.delete-post,
+[data-theme="dark"] .menu-item.delete-post {
+  color: #ff6b6b !important;
+}
+
+.dark .menu-item.delete-post:hover,
+[data-theme="dark"] .menu-item.delete-post:hover {
+  background-color: rgba(255, 107, 107, 0.2) !important;
+  color: #ff5252 !important;
+}
+
+/* Override conflicting dark mode styles for post menu specifically */
+.dark .post-menu-dropdown .menu-item {
+  color: #e0e0e0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.dark .post-menu-dropdown .menu-item.delete-post {
+  color: #ff6b6b !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.dark .post-menu-dropdown .menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .post-menu-dropdown .menu-item.delete-post:hover {
+  background-color: rgba(255, 107, 107, 0.2) !important;
+  color: #ff5252 !important;
+}
+
+/* Additional specificity for delete button visibility */
+body.dark .post-menu-dropdown .menu-item.delete-post,
+body.dark .post-menu-dropdown .menu-item.delete-post i,
+body.dark .post-menu-dropdown .menu-item.delete-post span {
+  color: #ff6b6b !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Force delete button visibility in all cases */
+.menu-item.delete-post {
+  color: #dc3545 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: flex !important;
+}
+
+.dark .menu-item.delete-post {
+  color: #ff6b6b !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: flex !important;
+}
+
+/* Enhanced Notification Styles */
+.notification {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  z-index: 10000;
+  min-width: 280px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  animation: slideInBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notification::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification.success {
+  background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.notification.success::before {
+  content: "✓";
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.notification.error {
+  background: linear-gradient(135deg, #dc3545, #e74c3c);
+}
+
+.notification.error::before {
+  content: "✕";
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.notification.info {
+  background: linear-gradient(135deg, #17a2b8, #3498db);
+}
+
+.notification.info::before {
+  content: "i";
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+@keyframes slideInBounce {
+  0% {
+    transform: translateX(100%) scale(0.8);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(-10px) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Dark mode notification support */
+[data-theme="dark"] .notification {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
 
 /* Right Sidebar */
