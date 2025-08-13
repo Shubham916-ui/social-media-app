@@ -11,7 +11,10 @@ if (!localStorage.getItem("token")) {
 })();
 
 // Use same API base as home.js for consistency
-const API = `http://localhost:5000/api`;
+const API =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000/api"
+    : "/api";
 
 // Helpers
 function $(sel) {
@@ -185,7 +188,7 @@ function togglePostMenu(postId) {
 // Delete post function
 async function deletePost(postId) {
   try {
-    const response = await fetch(`http://localhost:5000/api/posts/${postId}`, {
+    const response = await fetch(`${API}/posts/${postId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

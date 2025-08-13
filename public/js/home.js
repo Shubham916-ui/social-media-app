@@ -3,6 +3,12 @@ if (!localStorage.getItem("token")) {
   window.location.href = "/";
 }
 
+// API base URL - works for both local and production
+const API =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000/api"
+    : "/api";
+
 // Load posts when page loads
 document.addEventListener("DOMContentLoaded", () => {
   loadPosts();
@@ -13,10 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadPosts() {
   try {
     console.log("Fetching posts...");
-    const response = await fetch(
-      `http://localhost:5000/api/posts?t=${Date.now()}`,
-      { cache: "no-store" }
-    );
+    const response = await fetch(`${API}/posts?t=${Date.now()}`, {
+      cache: "no-store",
+    });
     const posts = await response.json();
 
     if (response.ok && Array.isArray(posts)) {
@@ -237,7 +242,7 @@ async function handleLikeClick(btn) {
 
   btn.style.pointerEvents = "none";
   try {
-    const res = await fetch(`http://localhost:5000/api/posts/${postId}/like`, {
+    const res = await fetch(`${API}/posts/${postId}/like`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: user._id }),
@@ -319,7 +324,7 @@ async function loadComments(postId, commentsListEl) {
       '<p style="color: #888; text-align: center;">Loading comments...</p>';
 
     const response = await fetch(
-      `http://localhost:5000/api/comments/post/${postId}?t=${Date.now()}`
+      `${API}/comments/post/${postId}?t=${Date.now()}`
     );
 
     if (response.ok) {
@@ -439,7 +444,7 @@ async function submitComment(postId, commentInput, commentsSection) {
   submitBtn.textContent = "Posting...";
 
   try {
-    const response = await fetch("http://localhost:5000/api/comments", {
+    const response = await fetch(`${API}/comments`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -569,7 +574,7 @@ function wireFeedFollowButtons(root = document) {
     const uid = btn.getAttribute("data-user-id");
     if (!uid) return;
     // Initialize status
-    fetch(`http://localhost:5000/api/followers/status/${uid}`, { headers })
+    fetch(`${API}/followers/status/${uid}`, { headers })
       .then((r) => (r.ok ? r.json() : { following: false }))
       .then((s) => {
         btn.textContent = s.following ? "Following" : "Follow";
@@ -583,7 +588,7 @@ function wireFeedFollowButtons(root = document) {
       }
       btn.disabled = true;
       try {
-        const res = await fetch(`http://localhost:5000/api/followers/${uid}`, {
+        const res = await fetch(`${API}/followers/${uid}`, {
           method: "POST",
           headers,
         });
@@ -749,7 +754,7 @@ function initializeCreatePost() {
         user: user._id,
       });
 
-      const response = await fetch("http://localhost:5000/api/posts", {
+      const response = await fetch(`${API}/posts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

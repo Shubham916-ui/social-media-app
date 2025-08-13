@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 const connectDB = require("./config/db");
@@ -15,11 +14,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // Serve everything in public/ at the root URL
 app.use(express.static(path.join(__dirname, "public")));
 
-// Database connection (you can remove this duplicate if connectDB() already connects)
-mongoose
-  .connect("mongodb://127.0.0.1:27017/social-media-app")
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+// Database connection handled by connectDB() above
 
 // API Routes
 app.use("/api/users", require("./routes/users"));
@@ -43,6 +38,13 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+// For local development
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+// Export for Vercel
+module.exports = app;
