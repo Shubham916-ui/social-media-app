@@ -1,21 +1,27 @@
+// Load environment variables
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const mongoose = require("mongoose");
 const connectDB = require("./config/db");
 
 const app = express();
 
 // Connect to database with better error handling
-if (process.env.NODE_ENV === "production") {
-  // In production, try to connect but don't crash if it fails initially
-  connectDB().catch((err) => {
+const initializeDatabase = async () => {
+  try {
+    await connectDB();
+    console.log("Database initialized successfully");
+  } catch (err) {
     console.error("Database connection failed:", err);
-    // Don't exit the process, let the app start anyway
-  });
-} else {
-  // In development, connect normally
-  connectDB();
-}
+    // In serverless environments, we'll retry on each request
+  }
+};
+
+// Initialize database connection
+initializeDatabase();
 
 // Middleware
 app.use(
@@ -27,10 +33,26 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+// Middleware to ensure database connection for API routes
+app.use("/api", async (req, res, next) => {
+  try {
+    // Check if mongoose is connected
+    if (mongoose.connection.readyState !== 1) {
+      console.log("Database not connected, attempting to reconnect...");
+      await connectDB();
+    }
+    next();
+  } catch (error) {
+    console.error("Database connection middleware error:", error);
+    res.status(503).json({
+      error: "Database connection failed",
+      details: error.message,
+    });
+  }
+});
+
 // Serve everything in public/ at the root URL
 app.use(express.static(path.join(__dirname, "public")));
-
-// Database connection handled by connectDB() above
 
 // Simple test endpoint
 app.get("/api/test", (req, res) => {
@@ -71,15 +93,6 @@ app.get("/profile", (req, res) => {
 
 // Default route for frontend root
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-// Catch-all handler: send back React's index.html file for client-side routing
-app.get("*", (req, res) => {
-  // Don't serve index.html for API routes
-  if (req.path.startsWith("/api/")) {
-    return res.status(404).json({ error: "API endpoint not found" });
-  }
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
