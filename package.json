@@ -5,6 +5,8 @@
   "scripts": {
     "start": "node app.js",
     "dev": "node app.js",
+    "build": "echo 'No build step required'",
+    "vercel-build": "echo 'Build completed'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

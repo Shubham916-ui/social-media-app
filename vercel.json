@@ -2,14 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "app.js",
+      "src": "api/index.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/app.js"
+      "dest": "/api/index.js"
     },
     {
       "src": "/home",
@@ -31,5 +35,10 @@
       "src": "/(.*)",
       "dest": "/public/$1"
     }
-  ]
+  ],
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30
+    }
+  }
 }
