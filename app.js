@@ -104,8 +104,8 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-// For local development
-if (process.env.NODE_ENV !== "production") {
+// For local development only
+if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
