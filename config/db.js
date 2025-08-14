@@ -19,10 +19,11 @@ const connectDB = async () => {
     };
 
     // Set mongoose-specific options for serverless
-    mongoose.set("bufferCommands", false);
+    mongoose.set("bufferCommands", true); // Changed to true to allow buffering
 
-    await mongoose.connect(mongoURI, options);
+    const conn = await mongoose.connect(mongoURI, options);
     console.log("✅ MongoDB Connected Successfully");
+    return conn; // Return the connection
   } catch (error) {
     console.error("❌ MongoDB Connection Error:", error.message);
 

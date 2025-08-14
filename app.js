@@ -14,14 +14,21 @@ const initializeDatabase = async () => {
   try {
     await connectDB();
     console.log("Database initialized successfully");
+    return true;
   } catch (err) {
     console.error("Database connection failed:", err);
-    // In serverless environments, we'll retry on each request
+    throw err;
   }
 };
 
 // Initialize database connection
-initializeDatabase();
+(async () => {
+  try {
+    await initializeDatabase();
+  } catch (err) {
+    console.error("Failed to initialize database:", err);
+  }
+})();
 
 // Middleware
 app.use(
