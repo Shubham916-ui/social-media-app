@@ -15,35 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeCreatePost();
 });
 
-// Function to show skeleton loaders
-function showSkeletonLoaders() {
-  const postsContainer = document.querySelector(".posts");
-  const skeletonHTML = `
-    <div class="post-skeleton">
-      <div class="post-skeleton-header">
-        <div class="post-skeleton-avatar skeleton-loader"></div>
-        <div class="post-skeleton-info">
-          <div class="post-skeleton-username skeleton-loader"></div>
-          <div class="post-skeleton-time skeleton-loader"></div>
-        </div>
-      </div>
-      <div class="post-skeleton-content skeleton-loader"></div>
-      <div class="post-skeleton-actions">
-        <div class="post-skeleton-action skeleton-loader"></div>
-        <div class="post-skeleton-action skeleton-loader"></div>
-        <div class="post-skeleton-action skeleton-loader"></div>
-      </div>
-    </div>
-  `.repeat(3); // Show 3 skeleton loaders
-
-  postsContainer.innerHTML = skeletonHTML;
-}
-
 // Function to load posts from API
 async function loadPosts() {
   try {
     console.log("Fetching posts...");
-    showSkeletonLoaders(); // Show skeleton loaders while fetching
     const response = await fetch(`${API}/posts?t=${Date.now()}`, {
       cache: "no-store",
     });
