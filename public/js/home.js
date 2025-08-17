@@ -9,25 +9,83 @@ const API =
     ? "http://localhost:5000/api"
     : "/api";
 
+// Global variables for pagination
+let currentPage = 1;
+let isLoading = false;
+let hasMore = true;
+
 // Load posts when page loads
 document.addEventListener("DOMContentLoaded", () => {
   loadPosts();
   initializeCreatePost();
+  initializeInfiniteScroll();
 });
+
+// Initialize infinite scroll
+function initializeInfiniteScroll() {
+  window.addEventListener("scroll", () => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+
+    if (
+      scrollTop + clientHeight >= scrollHeight - 100 &&
+      !isLoading &&
+      hasMore
+    ) {
+      loadPosts();
+    }
+  });
+}
+
+// Function to show loading spinner
+function showLoadingSpinner() {
+  const spinner = document.createElement("div");
+  spinner.id = "loading-spinner";
+  spinner.innerHTML = `
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  `;
+  document.querySelector("#posts-container").appendChild(spinner);
+}
+
+// Function to hide loading spinner
+function hideLoadingSpinner() {
+  const spinner = document.getElementById("loading-spinner");
+  if (spinner) {
+    spinner.remove();
+  }
+}
 
 // Function to load posts from API
 async function loadPosts() {
-  try {
-    console.log("Fetching posts...");
-    const response = await fetch(`${API}/posts?t=${Date.now()}`, {
-      cache: "no-store",
-    });
-    const posts = await response.json();
+  if (isLoading || !hasMore) return;
 
-    if (response.ok && Array.isArray(posts)) {
-      console.log("Loaded posts count:", posts.length);
-      displayPosts(posts);
-      // If a hash like #post-<id> is present, scroll to it after rendering
+  try {
+    isLoading = true;
+    showLoadingSpinner();
+
+    console.log("Fetching posts for page:", currentPage);
+    const response = await fetch(
+      `${API}/posts?page=${currentPage}&limit=10&t=${Date.now()}`,
+      {
+        cache: "no-store",
+      }
+    );
+    const data = await response.json();
+
+    if (response.ok && Array.isArray(data.posts)) {
+      console.log("Loaded posts count:", data.posts.length);
+
+      if (currentPage === 1) {
+        // Clear existing posts if it's the first page
+        document.querySelector("#posts-container").innerHTML = "";
+      }
+
+      displayPosts(data.posts);
+      hasMore = data.hasMore;
+      currentPage++;
+
+      // Handle hash navigation
       const hash = window.location.hash;
       if (hash && hash.startsWith("#post-")) {
         setTimeout(() => {
@@ -38,10 +96,13 @@ async function loadPosts() {
         }, 150);
       }
     } else {
-      console.error("Error loading posts:", posts.error || posts);
+      console.error("Error loading posts:", data.error || data);
     }
   } catch (error) {
     console.error("Network error loading posts:", error);
+  } finally {
+    isLoading = false;
+    hideLoadingSpinner();
   }
 }
 

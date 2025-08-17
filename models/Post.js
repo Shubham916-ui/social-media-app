@@ -13,6 +13,10 @@ const PostSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Add indexes for better performance
+PostSchema.index({ createdAt: -1 });
+PostSchema.index({ user: 1, createdAt: -1 });
+
 // Update like and comment counts before saving
 PostSchema.pre("save", function () {
   this.likeCount = this.likes.length;
